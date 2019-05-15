@@ -13,5 +13,8 @@ namespace Heemkunde.AspNetCore.WebApp.Data
             : base(options)
         {
         }
+
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Element> Elements { get; set; }
     }
 }
