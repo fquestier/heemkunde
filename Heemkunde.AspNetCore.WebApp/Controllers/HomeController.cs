@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Heemkunde.AspNetCore.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Heemkunde.AspNetCore.WebApp.Controllers
 {
     public class HomeController : Controller
     {
+        [Authorize]
         public IActionResult Index()
         {
             return View();

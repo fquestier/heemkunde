@@ -10,11 +10,23 @@ namespace Heemkunde.AspNetCore.WebApp.Models
     {
         public int ID { get; set; }
 
+        public int? MainCategoryID { get; set; }
+
         [Required]
+        [Display(Name = "Naam")]
         public string Name { get; set; }
 
+        [Display(Name = "Omschrijving")]
         public string Description { get; set; }
 
+        // Navigational properties
+        [Display(Name = "Hoofdcategorie")]
+        public Category MainCategory { get; set; }
+
+        public ICollection<Category> Categories { get; set; }
+
         public ICollection<Element> Elements { get; set; }
+
+        public ICollection<ObjectCategory> ObjectCategories { get; set; }
     }
 }

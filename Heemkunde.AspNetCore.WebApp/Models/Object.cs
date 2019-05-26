@@ -6,27 +6,18 @@ using System.Threading.Tasks;
 
 namespace Heemkunde.AspNetCore.WebApp.Models
 {
-    public enum ElementType
-    {
-        Text, MultilineText, Number, Date, Year
-    }
-
-    public class Element
+    public class Object
     {
         public int ID { get; set; }
-
-        public int CategoryID { get; set; }
 
         [Required]
         public string Name { get; set; }
 
-        public ElementType Type { get; set; }
-
-        public bool Mandatory { get; set; }
-
         // Navigational properties
-        public Category Category { get; set; }
-
         public ICollection<ObjectElement> ObjectElements { get; set; }
+
+        public ICollection<ObjectCategory> ObjectCategories { get; set; }
+
+        public ICollection<Attachment> Attachments { get; set; }
     }
 }

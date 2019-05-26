@@ -12,9 +12,9 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly HeemkundeDbContext _context;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(HeemkundeDbContext context)
         {
             _context = context;
         }
@@ -22,7 +22,8 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            var heemkundeDbContext = _context.Categories.Include(c => c.MainCategory);
+            return View(await heemkundeDbContext.ToListAsync());
         }
 
         // GET: Categories/Details/5
@@ -34,6 +35,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
             }
 
             var category = await _context.Categories
+                .Include(c => c.MainCategory)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (category == null)
             {
@@ -46,6 +48,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
+            ViewData["MainCategoryID"] = new SelectList(_context.Categories, "ID", "Name");
             return View();
         }
 
@@ -54,7 +57,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,Description")] Category category)
+        public async Task<IActionResult> Create([Bind("ID,MainCategoryID,Name,Description")] Category category)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +65,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["MainCategoryID"] = new SelectList(_context.Categories, "ID", "Name", category.MainCategoryID);
             return View(category);
         }
 
@@ -78,6 +82,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
             {
                 return NotFound();
             }
+            ViewData["MainCategoryID"] = new SelectList(_context.Categories, "ID", "Name", category.MainCategoryID);
             return View(category);
         }
 
@@ -86,7 +91,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Description")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,MainCategoryID,Name,Description")] Category category)
         {
             if (id != category.ID)
             {
@@ -113,6 +118,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["MainCategoryID"] = new SelectList(_context.Categories, "ID", "Name", category.MainCategoryID);
             return View(category);
         }
 
@@ -125,6 +131,7 @@ namespace Heemkunde.AspNetCore.WebApp.Controllers
             }
 
             var category = await _context.Categories
+                .Include(c => c.MainCategory)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (category == null)
             {

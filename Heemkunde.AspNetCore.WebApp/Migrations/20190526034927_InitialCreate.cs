@@ -48,6 +48,40 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    MainCategoryID = table.Column<int>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_MainCategoryID",
+                        column: x => x.MainCategoryID,
+                        principalTable: "Categories",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Objects",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Objects", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -153,6 +187,102 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Elements",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CategoryID = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
+                    Mandatory = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Elements", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Elements_Categories_CategoryID",
+                        column: x => x.CategoryID,
+                        principalTable: "Categories",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Attachments",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ObjectID = table.Column<int>(nullable: false),
+                    FileName = table.Column<string>(nullable: false),
+                    BlobName = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attachments", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Attachments_Objects_ObjectID",
+                        column: x => x.ObjectID,
+                        principalTable: "Objects",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ObjectCategories",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ObjectID = table.Column<int>(nullable: false),
+                    CategoryID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectCategories", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ObjectCategories_Categories_CategoryID",
+                        column: x => x.CategoryID,
+                        principalTable: "Categories",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ObjectCategories_Objects_ObjectID",
+                        column: x => x.ObjectID,
+                        principalTable: "Objects",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ObjectElements",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ObjectID = table.Column<int>(nullable: false),
+                    ElementID = table.Column<int>(nullable: false),
+                    Value = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectElements", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ObjectElements_Elements_ElementID",
+                        column: x => x.ElementID,
+                        principalTable: "Elements",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ObjectElements_Objects_ObjectID",
+                        column: x => x.ObjectID,
+                        principalTable: "Objects",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -191,6 +321,41 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Attachments_ObjectID",
+                table: "Attachments",
+                column: "ObjectID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_MainCategoryID",
+                table: "Categories",
+                column: "MainCategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Elements_CategoryID",
+                table: "Elements",
+                column: "CategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectCategories_CategoryID",
+                table: "ObjectCategories",
+                column: "CategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectCategories_ObjectID",
+                table: "ObjectCategories",
+                column: "ObjectID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectElements_ElementID",
+                table: "ObjectElements",
+                column: "ElementID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectElements_ObjectID",
+                table: "ObjectElements",
+                column: "ObjectID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -211,10 +376,28 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Attachments");
+
+            migrationBuilder.DropTable(
+                name: "ObjectCategories");
+
+            migrationBuilder.DropTable(
+                name: "ObjectElements");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Elements");
+
+            migrationBuilder.DropTable(
+                name: "Objects");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

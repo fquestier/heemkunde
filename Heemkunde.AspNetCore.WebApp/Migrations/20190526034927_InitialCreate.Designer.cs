@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Heemkunde.AspNetCore.WebApp.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190515222840_Category")]
-    partial class Category
+    [DbContext(typeof(HeemkundeDbContext))]
+    [Migration("20190526034927_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,27 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.Attachment", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BlobName")
+                        .IsRequired();
+
+                    b.Property<string>("FileName")
+                        .IsRequired();
+
+                    b.Property<int>("ObjectID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ObjectID");
+
+                    b.ToTable("Attachments");
+                });
+
             modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.Category", b =>
                 {
                     b.Property<int>("ID")
@@ -29,9 +50,14 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Name");
+                    b.Property<int?>("MainCategoryID");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.HasKey("ID");
+
+                    b.HasIndex("MainCategoryID");
 
                     b.ToTable("Categories");
                 });
@@ -46,7 +72,8 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
 
                     b.Property<bool>("Mandatory");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<int>("Type");
 
@@ -55,6 +82,61 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                     b.HasIndex("CategoryID");
 
                     b.ToTable("Elements");
+                });
+
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.Object", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Objects");
+                });
+
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.ObjectCategory", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoryID");
+
+                    b.Property<int>("ObjectID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.HasIndex("ObjectID");
+
+                    b.ToTable("ObjectCategories");
+                });
+
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.ObjectElement", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ElementID");
+
+                    b.Property<int>("ObjectID");
+
+                    b.Property<string>("Value")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ElementID");
+
+                    b.HasIndex("ObjectID");
+
+                    b.ToTable("ObjectElements");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -222,11 +304,52 @@ namespace Heemkunde.AspNetCore.WebApp.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.Attachment", b =>
+                {
+                    b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Object", "Object")
+                        .WithMany("Attachments")
+                        .HasForeignKey("ObjectID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.Category", b =>
+                {
+                    b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Category", "MainCategory")
+                        .WithMany("Categories")
+                        .HasForeignKey("MainCategoryID");
+                });
+
             modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.Element", b =>
                 {
                     b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Category", "Category")
                         .WithMany("Elements")
                         .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.ObjectCategory", b =>
+                {
+                    b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Category", "Category")
+                        .WithMany("ObjectCategories")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Object", "Object")
+                        .WithMany("ObjectCategories")
+                        .HasForeignKey("ObjectID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Heemkunde.AspNetCore.WebApp.Models.ObjectElement", b =>
+                {
+                    b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Element", "Element")
+                        .WithMany("ObjectElements")
+                        .HasForeignKey("ElementID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Heemkunde.AspNetCore.WebApp.Models.Object", "Object")
+                        .WithMany("ObjectElements")
+                        .HasForeignKey("ObjectID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
