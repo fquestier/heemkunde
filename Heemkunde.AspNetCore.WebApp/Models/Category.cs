@@ -10,6 +10,7 @@ namespace Heemkunde.AspNetCore.WebApp.Models
     {
         public int ID { get; set; }
 
+        [Display(Name = "Hoofdcategorie")]
         public int? MainCategoryID { get; set; }
 
         [Required]

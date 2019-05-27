@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Heemkunde.AspNetCore.WebApp.Data;
 using Heemkunde.AspNetCore.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Heemkunde.AspNetCore.WebApp.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly HeemkundeDbContext _context;
